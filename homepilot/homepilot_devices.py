@@ -1,3 +1,4 @@
+from homepilot.models.device import Device
 from homepilot.helpers import SessionHelper, raise_http_exception
 from homepilot.models.deviceV4 import DeviceV4
 import click
@@ -55,4 +56,18 @@ def update_capability(url: str, device_id: int, cap_name: str, cap_value: any):
 
     if not res.ok:
         raise_http_exception('update_capability', res)
+
+def get_device(url: str, device_id: int):
+    s = SessionHelper.current()
+    path = url + SUBADDRESS_DEVICES + device_id
+
+    res = s.get(path)
+
+    if not res.ok:
+        raise_http_exception('get_capabilities', res)
+    
+    device_raw = res.json()
+    device = Device(device_raw['payload']['device'])
+
+    return device
 

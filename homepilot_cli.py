@@ -1,5 +1,5 @@
 from homepilot.homepilot_login import login_homepilot
-from homepilot.homepilot_devices import get_devices, update_capability, boost_thermostat as b_thermostat
+from homepilot.homepilot_devices import get_device, get_devices, update_capability, boost_thermostat as b_thermostat
 from homepilot.helpers import clean_base_url
 from homepilot.models.device import Device
 import json
@@ -62,6 +62,18 @@ def updatecapability(url, password, device_id, capability):
 
     update_capability(url, device_id, json_capability['name'], json_capability['value'])
 
+
+@main.command()
+@click.option("--url", "-h", required=True, help="URL to homepilot")
+@click.option("--password", "-p", help="Password to use to access homepilot")
+@click.option("--device-id", required=True)
+def capabilities(url, password, device_id):
+    url = clean_base_url(url)
+    ensure_login(url, password)
+
+    device = get_device(url, device_id)
+    for capability in device.capabilities:
+        click.echo(f'Name: {capability.name} Value: "{capability.value}"')
 
 if __name__ == '__main__':
     main()
